@@ -75,9 +75,6 @@ public class EdServiceImpl implements EdService {
 			planId = dcCaseEntity.get().getPlanId();
 			appId = dcCaseEntity.get().getAppId();
 		}
-//		else {
-//			return null;
-//		}
 
 		Optional<PlanEntity> planEntity = planRepository.findById(planId);
 		if (planEntity.isPresent()) {
@@ -94,15 +91,10 @@ public class EdServiceImpl implements EdService {
 		if ("SNAP".equals(planName)) {
 
 			if (income.getSalaryIncome() > 300) {
-				// response.setPlanStatus("Denied");
 				response.setDenialReason("High Income");
 			}
 
 		} else if ("CCAP".equals(planName)) {
-
-			// boolean eligible = true;
-			// boolean noKidsFlag = true;
-			// boolean ageFlag = true;
 
 			if (!kids.isEmpty()) {
 
@@ -131,13 +123,7 @@ public class EdServiceImpl implements EdService {
 				response.setDenialReason("High Income + No Kids");
 			}
 
-			if (!ageflag) {
-				response.setDenialReason("Kids Age > 16");
-			}
-
-			if (income.getSalaryIncome() > 300 && !ageflag) {
-				response.setDenialReason("High Income + Kids Age > 16");
-			}
+			
 
 		} else if ("Medicaid".equals(planName)) {
 
@@ -190,26 +176,6 @@ public class EdServiceImpl implements EdService {
 				response.setDenialReason("Already an Employee");
 			}
 		}
-
-		response.setPlanName(planName);
-		if (response.getDenialReason() != null) {
-			response.setPlanStatus("Denied");
-		} else {
-			response.setPlanStatus("Approved");
-			response.setPlanStartDate(LocalDate.now().plusDays(1));
-			response.setPlanEndDate(LocalDate.now().plusMonths(3));
-			response.setBenefitAmt(350.00);
-		}
-
-		EdEligDtlsEntity edEligDtlsEntity = new EdEligDtlsEntity();
-		BeanUtils.copyProperties(response, edEligDtlsEntity);
-		edEligRepository.save(edEligDtlsEntity);
-		
-		CoTrgEntity coTrgEntity = new CoTrgEntity();
-		coTrgEntity.setCaseNum(caseNum);
-		coTrgEntity.setTrgStatus("Pending");
-		coTriggerRepository.save(coTrgEntity);
-
 		return response;
 	}
 
